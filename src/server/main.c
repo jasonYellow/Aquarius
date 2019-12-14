@@ -344,10 +344,14 @@ static void recv_cb(EV_P_ ev_io *w, int revents) {
                     break;
                 }
 
+                buf[recv_len] = '\0';
+                printf("recv data:%s\n",buf);
+
                 if (fin) {
                     static const char *resp = "byez\n";
-                    quiche_conn_stream_send(conn_io->conn, s, (uint8_t *) resp,
+                    int send = quiche_conn_stream_send(conn_io->conn, 5, (uint8_t *) resp,
                                             5, true);
+                    printf("stream 5 send:%d\n",send);
                 }
             }
 
@@ -439,8 +443,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    quiche_config_load_cert_chain_from_pem_file(config, "examples/cert.crt");
-    quiche_config_load_priv_key_from_pem_file(config, "examples/cert.key");
+    quiche_config_load_cert_chain_from_pem_file(config, "/tmp/cert.crt");
+    quiche_config_load_priv_key_from_pem_file(config, "/tmp/cert.key");
 
     quiche_config_set_application_protos(config,
         (uint8_t *) "\x05hq-24\x05hq-23\x08http/0.9", 21);
